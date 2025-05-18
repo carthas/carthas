@@ -1,5 +1,21 @@
+import java.util.Properties
+
+
 rootProject.name = "app"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+val localProperties: Properties = runCatching {
+    Properties().apply {
+        load(
+            file("${rootProject.projectDir.path}/local.properties")
+                .inputStream()
+        )
+    }
+}
+    .recover { Properties() }
+    .getOrNull()!!
+
+val isDevelopment = localProperties["carthas.isDevelopment"] == "true"
 
 pluginManagement {
     repositories {
@@ -29,7 +45,7 @@ dependencyResolutionManagement {
     }
 }
 
-includeBuild("../common")
+if (isDevelopment) includeBuild("../common")
 
 include(":composeApp")
 include(":server")

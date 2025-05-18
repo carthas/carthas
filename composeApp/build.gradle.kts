@@ -4,11 +4,19 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
-import org.jetbrains.kotlin.konan.properties.loadProperties
-import java.io.FileInputStream
 import java.util.Properties
 
-val localProperties = loadProperties("${project.rootDir.path}/local.properties")
+
+val localProperties: Properties = runCatching {
+    Properties().apply {
+        load(
+            file("${rootProject.projectDir.path}/local.properties")
+                .inputStream()
+        )
+    }
+}
+    .recover { Properties() }
+    .getOrNull()!!
 
 val isDevelopment = localProperties["carthas.isDevelopment"] == "true"
 
@@ -65,11 +73,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                if (isDevelopment) {
-                    implementation(libs.carthas.common.local)
-                } else {
-                    implementation(libs.carthas.common)
-                }
+                if (isDevelopment) implementation(libs.carthas.common.local)
+                else implementation(libs.carthas.common)
+
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)
