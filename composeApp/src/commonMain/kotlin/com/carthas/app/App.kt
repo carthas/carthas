@@ -32,9 +32,10 @@ import androidx.compose.ui.unit.dp
 import app.composeapp.generated.resources.Res
 import app.composeapp.generated.resources.carthas_logo_upscale
 import com.carthas.app.ui.theme.CarthasAppTheme
-import com.carthas.common.ui.ShaderTimeProducer
+import com.carthas.common.ui.AnimationTimeProducer
 import com.carthas.common.ui.shader.CarthasShader
 import com.carthas.common.ui.shader.ColorUniform
+import com.carthas.common.ui.shader.UniformSet
 import com.carthas.common.ui.shader.shader
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -53,18 +54,17 @@ fun App() {
 
         Box(
             modifier = Modifier
-                .fillMaxSize()
-
+                .fillMaxSize(),
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .blur(radius = 5.dp)
-                    .shader(backgroundShader)
+                    .shader(backgroundShader),
             )
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxSize(),
             ) {
                 SafeAreaSpacer()
                 Column(
@@ -100,7 +100,7 @@ fun App() {
                             modifier = Modifier
                                 .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(24.dp)
+                            verticalArrangement = Arrangement.spacedBy(24.dp),
                         ) {
                             Image(
                                 painter = painterResource(Res.drawable.carthas_logo_upscale),
@@ -126,9 +126,8 @@ fun App() {
 @Composable
 private fun rememberBlueWebShader(): CarthasShader = remember {
     CarthasShader(
-        skslCode = BlueWebSkSL,
-        staticUniforms = setOf(),
-        shaderTimeProducer = ShaderTimeProducer.Default,
+        skSLCode = BlueWebSkSL,
+        animationTimeProducer = AnimationTimeProducer.Default,
     )
 }
 
@@ -140,10 +139,12 @@ private fun rememberBackgroundShader(): CarthasShader {
 
     return derivedStateOf {
         CarthasShader(
-            skslCode = TopLeftBottomRightGradientSkSL,
-            staticUniforms = setOf(
-                ColorUniform("tl", tl),
-                ColorUniform("br", br),
+            skSLCode = TopLeftBottomRightGradientSkSL,
+            staticUniforms = UniformSet(
+                setOf(
+                    ColorUniform("tl", tl),
+                    ColorUniform("br", br),
+                ),
             ),
         )
     }.value
